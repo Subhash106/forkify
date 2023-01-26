@@ -2,7 +2,6 @@ import icons from 'url:../../img/icons.svg';
 import View from './View';
 
 class Recipe extends View {
-  _data;
   _parentElement = document.querySelector('.recipe');
 
   addHandlerRender(handler) {

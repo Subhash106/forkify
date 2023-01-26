@@ -1,7 +1,7 @@
 import * as model from './model';
 import recipeView from './views/recipe';
 import recipeListView from './views/recipeList';
-import { API_URL } from './config';
+import paginationView from './views/pagination';
 // import 'core-js/stable';
 // import 'regenerator-runtime/runtime';
 
@@ -33,10 +33,17 @@ async function showRecipeList() {
 
     await model.loadRecipeList(searchQuery);
 
-    recipeListView.render(model.state.recipeList);
+    paginationHandler(1);
+
+    paginationView.addHandlerClick(paginationHandler);
   } catch (e) {
     recipeListView.renderError(e.message);
   }
+}
+
+function paginationHandler(page) {
+  recipeListView.render(model.getRecordsForPage(page));
+  paginationView.render(model.state.search);
 }
 
 const init = () => {
