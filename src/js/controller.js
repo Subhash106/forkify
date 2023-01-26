@@ -19,6 +19,7 @@ async function showRecipe() {
     await model.loadRecipe(id);
 
     recipeView.render(model.state.recipe);
+    recipeView.addHandlerClick(controlServings);
   } catch (e) {
     recipeView.renderError(e.message);
   }
@@ -44,6 +45,13 @@ async function showRecipeList() {
 function paginationHandler(page) {
   recipeListView.render(model.getRecordsForPage(page));
   paginationView.render(model.state.search);
+}
+
+function controlServings(newServings) {
+  model.updateServings(newServings);
+
+  recipeView.render(model.state.recipe);
+  recipeView.addHandlerClick(controlServings);
 }
 
 const init = () => {

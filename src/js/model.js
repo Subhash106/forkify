@@ -39,3 +39,14 @@ export const getRecordsForPage = page => {
 
   return state.search.recipeList.slice(start, end);
 };
+
+export const updateServings = newServings => {
+  const { ingredients, servings } = state.recipe;
+  modifiedIngredients = ingredients.map(ingredient => ({
+    ...ingredient,
+    quantity: (ingredient.quantity / servings) * newServings
+  }));
+
+  state.recipe.ingredients = modifiedIngredients;
+  state.recipe.servings = newServings;
+};
