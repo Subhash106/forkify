@@ -1,50 +1,12 @@
 import icons from 'url:../../img/icons.svg';
+import View from './View';
 
-class Recipe {
-  #data;
-  #parentElement = document.querySelector('.recipe');
-
-  render(data) {
-    this.#data = data;
-    const markup = this._generateMarkup();
-    this._clear();
-    this.#parentElement.insertAdjacentHTML('beforeend', markup);
-  }
-
-  renderSpinner() {
-    const spinner = `
-        <div class="spinner">
-          <svg>
-            <use href="${icons}#icon-loader"></use>
-          </svg>
-        </div>
-  `;
-    this._clear();
-    this.#parentElement.insertAdjacentHTML('afterbegin', spinner);
-  }
+class Recipe extends View {
+  _data;
+  _parentElement = document.querySelector('.recipe');
 
   addHandlerRender(handler) {
     ['hashchange', 'load'].forEach(ev => window.addEventListener(ev, handler));
-  }
-
-  renderError(error) {
-    const markup = `
-        <div class="error">
-            <div>
-            <svg>
-                <use href="src/img/icons.svg#icon-alert-triangle"></use>
-            </svg>
-            </div>
-            <p>${error}. Please try again!</p>
-        </div>
-        `;
-
-    this._clear();
-    this.#parentElement.insertAdjacentHTML('afterbegin', markup);
-  }
-
-  _clear() {
-    this.#parentElement.innerHTML = '';
   }
 
   _renderIngredient(ingredient) {
@@ -71,7 +33,7 @@ class Recipe {
       publisher,
       servings,
       source_url
-    } = this.#data;
+    } = this._data;
 
     return `
           <figure class="recipe__fig">

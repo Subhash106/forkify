@@ -1,6 +1,6 @@
 import * as model from './model';
-import icons from 'url:../img/icons.svg';
 import recipeView from './views/recipe';
+import recipeListView from './views/recipeList';
 import { API_URL } from './config';
 // import 'core-js/stable';
 // import 'regenerator-runtime/runtime';
@@ -24,64 +24,24 @@ async function showRecipe() {
   }
 }
 
+async function showRecipeList() {
+  try {
+    const searchQuery = recipeListView.getQuery();
+
+    if (!searchQuery) return;
+    recipeListView.renderSpinner();
+
+    await model.loadRecipeList(searchQuery);
+
+    recipeListView.render(model.state.recipeList);
+  } catch (e) {
+    recipeListView.renderError(e.message);
+  }
+}
+
 const init = () => {
   recipeView.addHandlerRender(showRecipe);
+  recipeListView.addHandlerRender(showRecipeList);
 };
 
 init();
-
-document
-  .querySelector('.search__btn')
-  .addEventListener('click', async function (e) {
-    e.preventDefault();
-    renderSpinner(results);
-    try {
-      const searchQuery = document.querySelector('.search__field').value;
-      const response = await fetch(`${API_URL}?search=${searchQuery}`);
-
-      if (!response.ok) {
-        throw new Error('Something went wrong!');
-      }
-
-      const data = await response.json();
-      const { recipes } = data.data;
-
-      console.log('data', recipes);
-
-      renderResults(recipes);
-    } catch (e) {
-      console.log(e.message);
-    }
-  });
-
-function renderResults(recipes) {
-  results.innerHTML = '';
-  results.insertAdjacentHTML(
-    'afterbegin',
-    recipes.map(recipe => renderRecipeCard(recipe)).join('')
-  );
-}
-
-function renderRecipeCard(recipe) {
-  const { id, image_url, publisher, title } = recipe;
-  const html = `
-    <li class="preview">
-      <a class="preview__link preview__link--active" href="#${id}">
-        <figure class="preview__fig">
-          <img src="${image_url}" alt="${title}" />
-        </figure>
-        <div class="preview__data">
-          <h4 class="preview__title">${title}</h4>
-          <p class="preview__publisher">${publisher}</p>
-          <div class="preview__user-generated">
-            <svg>
-              <use href="${icons}#icon-user"></use>
-            </svg>
-          </div>
-        </div>
-      </a>
-    </li>
-    `;
-
-  return html;
-}
