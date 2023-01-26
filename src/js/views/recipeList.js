@@ -19,10 +19,13 @@ class RecipeList extends View {
   }
 
   _generateList(recipe) {
+    const hashId = window.location.hash.slice(1);
     const { id, image_url, publisher, title } = recipe;
     return `
         <li class="preview">
-        <a class="preview__link preview__link--active" href="#${id}">
+        <a class="preview__link ${
+          id === hashId ? 'preview__link--active' : ''
+        }" href="#${id}">
             <figure class="preview__fig">
             <img src="${image_url}" alt="${title}" />
             </figure>

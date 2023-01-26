@@ -20,6 +20,7 @@ async function showRecipe() {
 
     recipeView.render(model.state.recipe);
     recipeView.addHandlerClick(controlServings);
+    recipeListView.update(model.getRecordsForPage(model.state.search.page));
   } catch (e) {
     recipeView.renderError(e.message);
   }
@@ -50,8 +51,12 @@ function paginationHandler(page) {
 function controlServings(newServings) {
   model.updateServings(newServings);
 
-  recipeView.render(model.state.recipe);
-  recipeView.addHandlerClick(controlServings);
+  // when use render, we have to add the event listenr
+  // recipeView.render(model.state.recipe);
+  // recipeView.addHandlerClick(controlServings);
+
+  // while we use update i.e. partial update, we don't require to attach the event listener again
+  recipeView.update(model.state.recipe);
 }
 
 const init = () => {

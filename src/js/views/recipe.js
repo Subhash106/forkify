@@ -19,6 +19,8 @@ class Recipe extends View {
           '.recipe__info-data--people'
         ).textContent;
 
+        console.log('currentServings', currentServings);
+
         if (target.classList.contains('btn--decrease-servings')) {
           if (currentServings - 1 > 0) handler(currentServings - 1);
         }
