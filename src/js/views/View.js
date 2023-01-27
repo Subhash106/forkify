@@ -5,6 +5,7 @@ export default class View {
   _message = 'No recipe found. Please try again later';
 
   render(data) {
+    if (!data || (Array.isArray(data) && data.length === 0)) this.renderError();
     this._data = data;
     const markup = this._generateMarkup();
     this._clear();

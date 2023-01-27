@@ -1,4 +1,4 @@
-import { API_URL, RECORDS_PER_PAGE } from './config';
+import { API_URL, BOOKMARKS, RECORDS_PER_PAGE } from './config';
 import { getJSON } from './helper';
 
 export const state = {
@@ -8,13 +8,20 @@ export const state = {
     page: 1,
     recipeList: [],
     recordsPerPage: RECORDS_PER_PAGE
-  }
+  },
+  bookmarks: JSON.parse(localStorage.getItem(BOOKMARKS)) || []
 };
 
 export const loadRecipe = async function (id) {
   try {
     const data = await getJSON(`${API_URL}/${id}`);
     const { recipe } = data;
+    // check if recipe is bookmarked
+    state.bookmarks.forEach(bookmark => {
+      if (bookmark.id === recipe.id) {
+        recipe.bookmarked = true;
+      }
+    });
     state.recipe = recipe;
   } catch (e) {
     throw e;
@@ -49,4 +56,22 @@ export const updateServings = newServings => {
 
   state.recipe.ingredients = modifiedIngredients;
   state.recipe.servings = newServings;
+};
+
+export const bookmark = () => {
+  state.bookmarks.push(state.recipe);
+  state.recipe.bookmarked = true;
+
+  localStorage.setItem(BOOKMARKS, JSON.stringify(state.bookmarks));
+};
+
+export const deleteBookmark = id => {
+  const bookmarkIndex = state.bookmarks.findIndex(
+    bookmark => bookmark.id === id
+  );
+
+  state.bookmarks.splice(bookmarkIndex, 1);
+  state.recipe.bookmarked = false;
+
+  localStorage.setItem(BOOKMARKS, JSON.stringify(state.bookmarks));
 };

@@ -31,6 +31,10 @@ class Recipe extends View {
       });
   }
 
+  addHandlerBookmark(handler) {
+    document.querySelector('.btn--round').addEventListener('click', handler);
+  }
+
   _renderIngredient(ingredient) {
     const { quantity, unit, description } = ingredient;
 
@@ -101,7 +105,9 @@ class Recipe extends View {
             </div>
             <button class="btn--round">
               <svg class="">
-                <use href="${icons}#icon-bookmark-fill"></use>
+                <use href="${icons}#icon-bookmark${
+      this._data.bookmarked ? '-fill' : ''
+    }"></use>
               </svg>
             </button>
           </div>
