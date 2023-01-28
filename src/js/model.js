@@ -1,5 +1,5 @@
-import { API_URL, BOOKMARKS, RECORDS_PER_PAGE } from './config';
-import { getJSON } from './helper';
+import { API_URL, BOOKMARKS, KEY, RECORDS_PER_PAGE } from './config';
+import { getJSON, sendJSON } from './helper';
 
 export const state = {
   recipe: {},
@@ -14,7 +14,7 @@ export const state = {
 
 export const loadRecipe = async function (id) {
   try {
-    const data = await getJSON(`${API_URL}/${id}`);
+    const data = await getJSON(`${API_URL}/${id}?key=${KEY}`);
     const { recipe } = data;
     // check if recipe is bookmarked
     state.bookmarks.forEach(bookmark => {
@@ -28,10 +28,14 @@ export const loadRecipe = async function (id) {
   }
 };
 
+/**
+ *
+ * @param {String} searchQuery
+ */
 export const loadRecipeList = async function (searchQuery) {
   state.search.query = searchQuery;
   try {
-    const data = await getJSON(`${API_URL}?search=${searchQuery}`);
+    const data = await getJSON(`${API_URL}?search=${searchQuery}&key=${KEY}`);
     const { recipes } = data;
     state.search.recipeList = recipes;
   } catch (e) {
@@ -39,6 +43,11 @@ export const loadRecipeList = async function (searchQuery) {
   }
 };
 
+/**
+ *
+ * @param {Integer} page
+ * @returns {Array}
+ */
 export const getRecordsForPage = page => {
   state.search.page = page;
   const start = (page - 1) * RECORDS_PER_PAGE;
@@ -74,4 +83,33 @@ export const deleteBookmark = id => {
   state.recipe.bookmarked = false;
 
   localStorage.setItem(BOOKMARKS, JSON.stringify(state.bookmarks));
+};
+
+export const uploadRecipe = async newRecipe => {
+  const data = Object.entries(newRecipe);
+
+  const ingredients = data
+    .filter(d => d[0].startsWith('ingredient-') && d[1] !== '')
+    .map(ing => {
+      const [quantity, unit, description] = ing[1]
+        .replaceAll(' ', '')
+        .split(',');
+      return { quantity: quantity ? +quantity : null, unit, description };
+    });
+
+  const recipe = {
+    ingredients,
+    image_url: newRecipe.image,
+    source_url: newRecipe.sourceUrl,
+    publisher: newRecipe.publisher,
+    servings: newRecipe.servings,
+    title: newRecipe.title,
+    cooking_time: newRecipe.cookingTime
+  };
+
+  try {
+    await sendJSON(`${API_URL}?key=${KEY}`, recipe);
+  } catch (e) {
+    throw e;
+  }
 };

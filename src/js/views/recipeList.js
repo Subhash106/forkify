@@ -6,7 +6,10 @@ class RecipeList extends View {
 
   addHandlerRender(handler) {
     ['click'].forEach(ev =>
-      document.querySelector('.search__btn').addEventListener(ev, handler)
+      document.querySelector('.search__btn').addEventListener(ev, function (e) {
+        e.preventDefault();
+        handler();
+      })
     );
   }
 
